@@ -270,7 +270,7 @@ struct ExampleView: View {
 
 It is very easy to dismiss a dialog
 
-- **Dismiss from the place we presented it**: just set the state `dialog` to nil or turn orr the bool flag `isShowingDialog = false`
+- **Dismiss from the place we presented it**: just set the state `dialog` to nil or turn off the bool flag `isShowingDialog = false`
 - **Dismiss the dialog from the dialog itself**: DDDialog provides an environment called `dialogPresenter`, we can use it to dismiss. For example
 
 ```swift
