@@ -19,6 +19,13 @@ struct TabBarViewExample: View {
             case .setting: return Image(systemName: "gear.circle.fill")
             }
         }
+        
+        var title: String {
+            switch self {
+            case .home: return "Home"
+            case .setting: return "Settings"
+            }
+        }
     }
     
     @Environment(\.presentationMode) private var presentationMode
@@ -28,7 +35,13 @@ struct TabBarViewExample: View {
     var body: some View {
         TabView(selection: $selection) {
             ForEach(Tab.allCases, id: \.self) {
-                tabView(tab: $0)
+                if #available(iOS 16, *) {
+                    tabView(tab: $0)
+                        .toolbarBackground(.visible, for: .tabBar)
+                        .toolbarBackground(Color.black, for: .tabBar)
+                } else {
+                    tabView(tab: $0)
+                }
             }
         }
         .setupDialogs() // <- Put it here to cover the whole navigation view (including navigation bar) and tab bar
@@ -42,7 +55,10 @@ struct TabBarViewExample: View {
             }
         }
         .tabItem {
-            tab.image
+            VStack {
+                tab.image
+                Text(tab.title)
+            }
         }
         .tag(tab)
     }
@@ -60,6 +76,9 @@ struct HomeView: View {
             Spacer()
             NavigationLink {
                 ExampleView(navigationBarColor: .yellow)
+                    // Uncomment this to see the effect the root point overriden
+                    // The dialog then won't cover the navigation bar and tab bar as root point is inside this view
+                    // .setupDialogs()
             } label: {
                 Text("Push to another view")
                     .foregroundColor(.white)
