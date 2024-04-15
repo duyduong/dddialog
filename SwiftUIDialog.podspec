@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = 'DDDialog'
+  s.name             = 'SwiftUIDialog'
   s.version          = '1.0.0'
   s.license          = 'MIT'
   s.homepage         = 'https://github.com/duyduong/dddialog'
