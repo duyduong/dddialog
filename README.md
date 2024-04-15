@@ -26,7 +26,7 @@ DDDialog is a SwiftUI library for presenting a dialog
 
 The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler.
 
-Once you have your Swift package set up, adding Alamofire as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift` or the Package list in Xcode.
+Once you have your Swift package set up, adding DDDialog as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift` or the Package list in Xcode.
 
 ```swift
 dependencies: [
@@ -42,7 +42,7 @@ Normally you'll want to depend on the `DDDialog` target:
 
 ### CocoaPods
 
-[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate Alamofire into your Xcode project using CocoaPods, specify it in your `Podfile`:
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate DDDialog into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
 ```ruby
 pod 'SwiftUIDialog'
