@@ -8,9 +8,11 @@
 import SwiftUI
 
 /// Dialog presenter object, use for dismiss a dialog manually
-public final class DialogPresenter: ObservableObject {
+@Observable
+public final class DialogPresenter {
+    @ObservationIgnored
     var didDimiss: (() -> Void)?
-    @Published var isPresented = false
+    var isPresented = false
 
     /// Dismiss the current dialog with completion callback (animation finished)
     public func dismiss(completion: (() -> Void)? = nil) {

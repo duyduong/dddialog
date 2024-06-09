@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DialogContainerView<Content: View>: View {
-    @EnvironmentObject private var dialogPresenter: DialogPresenter
+    @Environment(DialogPresenter.self) private var dialogPresenter
 
     let placement: DialogPlacement
     let shouldDismissOnTapOutside: Bool
@@ -42,7 +42,7 @@ struct DialogContainerView<Content: View>: View {
             guard !dialogPresenter.isPresented else { return }
             dialogPresenter.isPresented = true
         }
-        .onChange(of: dialogPresenter.isPresented) { isPresented in
+        .onChange(of: dialogPresenter.isPresented) { _, isPresented in
             var animation: Animation = defaultAnimation
             if isPresented {
                 if let preferredAnimation {
@@ -50,14 +50,17 @@ struct DialogContainerView<Content: View>: View {
                 } else if placement == .center {
                     animation = .interpolatingSpring(stiffness: 300, damping: 15)
                 }
-            }
-            withAnimation(animation) {
-                showedContent = isPresented
-            }
-            guard !isPresented else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                dialogPresenter.didDimiss?()
-                didDismiss?()
+                
+                withAnimation(animation) {
+                    showedContent = true
+                }
+            } else {
+                withAnimation(animation) {
+                    showedContent = false
+                } completion: {
+                    dialogPresenter.didDimiss?()
+                    didDismiss?()
+                }
             }
         }
         .environment(\.dialogPresenter, dialogPresenter)
@@ -129,10 +132,10 @@ struct DialogViewModifier<Item: Dialog, DialogContent: View>: ViewModifier {
     @Binding var item: Item?
     let content: (Item) -> DialogContent
 
-    @EnvironmentObject private var manager: DialogManager
+    @Environment(DialogManager.self) private var manager
 
     func body(content: Content) -> some View {
-        content.onChange(of: item) { newValue in
+        content.onChange(of: item) { _, newValue in
             if let newValue {
                 manager.addDialog(id: newValue) {
                     DialogItemView(item: newValue) { dismissedItem in
@@ -179,10 +182,10 @@ struct DialogPresentedViewModifier<DialogContent: View>: ViewModifier {
     // To keep track of the current showing item
     @State private var presentingItem: BoolDialog?
 
-    @EnvironmentObject private var manager: DialogManager
+    @Environment(DialogManager.self) private var manager
 
     func body(content: Content) -> some View {
-        content.onChange(of: isPresented) { isPresented in
+        content.onChange(of: isPresented) { _, isPresented in
             if isPresented {
                 let presentingItem = BoolDialog(
                     placement: placement,
@@ -230,7 +233,7 @@ struct DialogItemView<Item: Dialog, Content: View>: View {
 }
 
 struct SetupDialogsViewModifier: ViewModifier {
-    @StateObject private var manager = DialogManager()
+    @State private var manager = DialogManager()
 
     func body(content: Content) -> some View {
         ZStack {
@@ -239,6 +242,6 @@ struct SetupDialogsViewModifier: ViewModifier {
                 $0.contentView
             }
         }
-        .environmentObject(manager)
+        .environment(manager)
     }
 }

@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-final class DialogManager: ObservableObject {
+@Observable
+final class DialogManager {
     // The item pushed into stacks
     struct DialogItem: Hashable {
         static func == (lhs: DialogItem, rhs: DialogItem) -> Bool {
@@ -20,7 +21,7 @@ final class DialogManager: ObservableObject {
 
         var contentView: some View {
             content()
-                .environmentObject(presenter)
+                .environment(presenter)
         }
 
         init(id: AnyHashable, content: @escaping () -> AnyView) {
@@ -34,7 +35,7 @@ final class DialogManager: ObservableObject {
     }
 
     // Stacks for storing all presented dialogs
-    @Published var dialogs: [DialogItem] = []
+    var dialogs: [DialogItem] = []
 }
 
 extension DialogManager {
@@ -56,14 +57,16 @@ extension DialogManager {
     }
 
     func dismissDialog<ID: Hashable>(id: ID) {
-        guard let presenter = dialogs.last(where: { ($0.id as? ID) == id })?.presenter else { return }
+        let lastItem = dialogs.last(where: { ($0.id as? ID) == id })
+        guard let presenter = lastItem?.presenter else { return }
         // Call this for dismiss animation
         // The view will call `removeDialog` after animation completed
         presenter.isPresented = false
     }
 
     func dismissLastDialog<ID: Hashable>(with id: ID.Type) {
-        guard let presenter = dialogs.last(where: { ($0.id as? ID) != nil })?.presenter else { return }
+        let lastItem = dialogs.last(where: { ($0.id as? ID) != nil })
+        guard let presenter = lastItem?.presenter else { return }
         // Call this for dismiss animation
         // The view will call `removeDialog` after animation completed
         presenter.isPresented = false

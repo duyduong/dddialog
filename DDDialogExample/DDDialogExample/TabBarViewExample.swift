@@ -35,13 +35,9 @@ struct TabBarViewExample: View {
     var body: some View {
         TabView(selection: $selection) {
             ForEach(Tab.allCases, id: \.self) {
-                if #available(iOS 16, *) {
-                    tabView(tab: $0)
-                        .toolbarBackground(.visible, for: .tabBar)
-                        .toolbarBackground(Color.black, for: .tabBar)
-                } else {
-                    tabView(tab: $0)
-                }
+                tabView(tab: $0)
+                    .toolbarBackground(.visible, for: .tabBar)
+                    .toolbarBackground(Color.black, for: .tabBar)
             }
         }
         .setupDialogs() // <- Put it here to cover the whole navigation view (including navigation bar) and tab bar
@@ -75,7 +71,7 @@ struct HomeView: View {
             ExampleView(navigationBarColor: .green)
             Spacer()
             NavigationLink {
-                ExampleView(navigationBarColor: .yellow)
+                MultipleDialogExampleView(navigationBarColor: .yellow)
                     // Uncomment this to see the effect the root point overriden
                     // The dialog then won't cover the navigation bar and tab bar as root point is inside this view
                     // .setupDialogs()
