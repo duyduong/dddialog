@@ -13,6 +13,8 @@ public final class DialogPresenter {
     @ObservationIgnored
     var didDimiss: (() -> Void)?
     var isPresented = false
+    
+    public init() {}
 
     /// Dismiss the current dialog with completion callback (animation finished)
     public func dismiss(completion: (() -> Void)? = nil) {

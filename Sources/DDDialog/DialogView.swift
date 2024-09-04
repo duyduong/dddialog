@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DialogContainerView<Content: View>: View {
-    @Environment(DialogPresenter.self) private var dialogPresenter
+    @Environment(DialogPresenter.self) private var presenter
 
     let placement: DialogPlacement
     let shouldDismissOnTapOutside: Bool
@@ -31,7 +31,7 @@ struct DialogContainerView<Content: View>: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .onTapGesture {
                         guard shouldDismissOnTapOutside else { return }
-                        dialogPresenter.isPresented = false
+                        presenter.isPresented = false
                     }
                     .transition(.opacity.animation(defaultAnimation))
 
@@ -39,10 +39,10 @@ struct DialogContainerView<Content: View>: View {
             }
         }
         .onAppear {
-            guard !dialogPresenter.isPresented else { return }
-            dialogPresenter.isPresented = true
+            guard !presenter.isPresented else { return }
+            presenter.isPresented = true
         }
-        .onChange(of: dialogPresenter.isPresented) { _, isPresented in
+        .onChange(of: presenter.isPresented) { _, isPresented in
             var animation: Animation = defaultAnimation
             if isPresented {
                 if let preferredAnimation {
@@ -58,12 +58,11 @@ struct DialogContainerView<Content: View>: View {
                 withAnimation(animation) {
                     showedContent = false
                 } completion: {
-                    dialogPresenter.didDimiss?()
+                    presenter.didDimiss?()
                     didDismiss?()
                 }
             }
         }
-        .environment(\.dialogPresenter, dialogPresenter)
     }
 
     init(
@@ -82,11 +81,6 @@ struct DialogContainerView<Content: View>: View {
         self.preferredTransition = preferredTransition
         self.didDismiss = didDismiss
         self.content = content
-    }
-
-    func callDidDismiss() {
-        dialogPresenter.didDimiss?()
-        didDismiss?()
     }
 }
 
@@ -139,9 +133,12 @@ struct DialogViewModifier<Item: Dialog, DialogContent: View>: ViewModifier {
             if let newValue {
                 manager.addDialog(id: newValue) {
                     DialogItemView(item: newValue) { dismissedItem in
-                        guard dismissedItem == newValue else { return }
                         manager.removeDialog(id: dismissedItem)
-                        self.item = manager.getLastItem(with: Item.self)
+                        // If the dismissed item and the current is the same
+                        // should change current to the last item in the list
+                        if item == dismissedItem {
+                            item = manager.getLastItem(with: Item.self)
+                        }
                     } content: {
                         self.content($0)
                     }
@@ -197,7 +194,6 @@ struct DialogPresentedViewModifier<DialogContent: View>: ViewModifier {
                 self.presentingItem = presentingItem
                 manager.addDialog(id: presentingItem) {
                     DialogItemView(item: presentingItem) { dismissedItem in
-                        guard dismissedItem == presentingItem else { return }
                         manager.removeDialog(id: dismissedItem)
                         self.presentingItem = nil
                         self.isPresented = false

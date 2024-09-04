@@ -40,6 +40,7 @@ struct TabBarViewExample: View {
                     .toolbarBackground(Color.black, for: .tabBar)
             }
         }
+        .setupPopover()
         .setupDialogs() // <- Put it here to cover the whole navigation view (including navigation bar) and tab bar
     }
     

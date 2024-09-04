@@ -22,6 +22,7 @@ final class DialogManager {
         var contentView: some View {
             content()
                 .environment(presenter)
+                .environment(\.dialogPresenter, presenter)
         }
 
         init(id: AnyHashable, content: @escaping () -> AnyView) {

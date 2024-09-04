@@ -17,6 +17,7 @@ struct NavigationViewExample: View {
                 .toolbarBackground(Color.blue, for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
         }
+        .setupPopover()
         .setupDialogs() // <- Put it here to cover the whole navigation view (including navigation bar)
     }
     
@@ -94,6 +95,7 @@ struct MultipleDialogExampleView: View {
     
     var navigationBarColor: Color = .blue
     @State private var dialog: MultipleDialog?
+    @State private var isShowingPopover = false
     
     var body: some View {
         contentView
@@ -110,6 +112,20 @@ struct MultipleDialogExampleView: View {
                 )
             } label: {
                 Text("Show Dialog 1")
+            }
+            
+            Button {
+                isShowingPopover = true
+            } label: {
+                Text("Show Popover")
+            }
+            .uiPopover(isPresented: $isShowingPopover) {
+                DialogContentView(content: "This is a popover") {
+                    dialog = .init(
+                        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                        type: .dialog2
+                    )
+                }
             }
         }
         .dialog(item: $dialog) {
@@ -136,8 +152,7 @@ extension MultipleDialogExampleView {
                     .font(.title2)
                 
                 Button {
-                    dialogPresenter.dismiss()
-                    action()
+                    dialogPresenter.dismiss(completion: action)
                 } label: {
                     Text("Next dialog")
                         .foregroundColor(.white)
